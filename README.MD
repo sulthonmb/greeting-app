@@ -97,6 +97,9 @@ docker-compose up --build
 ## Monitoring and Logging
 
 - **Grafana Dashboard**: Set up Grafana to monitor the application metrics.
+	- **Default login**
+		- **Username**: admin
+		- **Password**: admin
 - **Loki Logs**: Use Loki to view application logs.
 
 ---
