@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT}:${PORT}"  # Exposing the port specified in .env
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      APP_NAME: ${APP_NAME}
+      APP_VERSION: ${APP_VERSION}
+      ENABLE_CLUSTERING: ${ENABLE_CLUSTERING}
+      OS_MAXIMUM_CORE_ALLOWED: ${OS_MAXIMUM_CORE_ALLOWED}
+      DB_DIALECT: ${DB_DIALECT}
+      DB_HOST: db  # Use the service name for DB host in Docker Compose
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_POOL_MAX: ${DB_POOL_MAX}
+      ROUND_SALT: ${ROUND_SALT}
+      SECRET: ${SECRET}
+      LOKI_HOST: ${LOKI_HOST}
+      REDIS_HOST: redis  # Use the service name for Redis host
+      REDIS_USERNAME: ${REDIS_USERNAME}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_TTL: ${REDIS_TTL}
+      RABBITMQ_HOST: rabbitmq  # Use the service name for RabbitMQ host
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_PREFETCH: ${RABBITMQ_PREFETCH}
+      API_KEY_IPGEOLOCATION: ${API_KEY_IPGEOLOCATION}
+      BASE_URL_IPGEOLOCATION: ${BASE_URL_IPGEOLOCATION}
+      BASE_URL_IPFY: ${BASE_URL_IPFY}
+      BASE_URL_EMAIL_SERVICE: ${BASE_URL_EMAIL_SERVICE}
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+      - loki
+    networks:
+      - backend
+
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - backend
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    ports:
+      - "15672:15672"  # For RabbitMQ management UI
+      - "5672:5672"    # For RabbitMQ message broker
+    networks:
+      - backend
+
+  loki:
+    image: grafana/loki:2.8.0
+    container_name: loki
+    ports:
+      - "3100:3100"  # For Loki's HTTP API
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"  # Grafana web UI port
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "admin"  # Set Grafana admin password
+      DATASOURCE_UID: loki
+    volumes: 
+      - ./grafana:/etc/grafana/provisioning
+    depends_on:
+      - loki
+    networks:
+      - backend
+
+volumes:
+  db_data:
+
+networks:
+  backend:
+    driver: bridge

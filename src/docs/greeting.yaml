@@ -1,0 +1,53 @@
+tags:
+  name: Greeting
+  description: Greeting API
+/v1/send-greeting:
+  post:
+    summary: Send greeting message user
+    tags: [Greeting]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/definitions/Greeting/SendGreetingRequest"
+    responses:
+      200:
+        description: Success create user.
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Greeting/SendGreetingSuccess"
+      404:
+        description: Failed
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Greeting/SendGreetingFailed"
+definitions:
+  Greeting:
+    SendGreetingRequest:
+      required: []
+      properties:
+        event:
+          type: string
+        timezone:
+          type: string
+        isAllTimeZone:
+          type: boolean
+    SendGreetingSuccess:
+      type: object
+      properties:
+        message: string
+        data:
+          type: object
+        error:
+          type: "null"
+    SendGreetingFailed:
+      type: object
+      properties:
+        message: string
+        data:
+          type: "null"
+        error:
+          type: "null"

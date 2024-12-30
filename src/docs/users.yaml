@@ -1,0 +1,94 @@
+tags:
+  name: Users
+  description: Users API
+/v1/users:
+  post:
+    summary: Create user
+    tags: [Users]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/definitions/Users/CreateUserRequest"
+    responses:
+      200:
+        description: Success create user.
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Users/CreateUserSuccess"
+      404:
+        description: Not found
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Users/CreateUserFailed"
+/v1/users/{uuid}:
+  delete:
+    summary: Delete user
+    tags: [Users]
+    parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+        required: required
+        description: uuid of user to delete
+    responses:
+      200:
+        description: Success delete users
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Users/DeleteUserResponse"
+      401:
+        description: Broadcast user not found
+      500:
+        description: Unable to delete ongoing or finished broadcast.
+definitions:
+  Users:
+    CreateUserRequest:
+      required:
+        ["firstName", "email", "password", "birthDate", "gender", "uuidRole"]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        birthDate:
+          type: string
+        phoneNumber:
+          type: string
+        gender:
+          type: string
+        uuidRole:
+          type: string
+    CreateUserSuccess:
+      type: object
+      properties:
+        message: string
+        data:
+          type: object
+        error:
+          type: "null"
+    CreateUserFailed:
+      type: object
+      properties:
+        message: string
+        data:
+          type: "null"
+        error:
+          type: "null"
+    DeleteUserResponse:
+      type: object
+      properties:
+        message: string
+        data:
+          type: object
+        error:
+          type: "null"

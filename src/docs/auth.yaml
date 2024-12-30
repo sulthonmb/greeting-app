@@ -1,0 +1,51 @@
+tags:
+  name: Auth
+  description: Authentication API
+/v1/login:
+  post:
+    summary: Login to get JWT
+    tags: [Auth]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/definitions/Auth/LoginRequest"
+    responses:
+      200:
+        description: Success login.
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Auth/LoginSuccess"
+      404:
+        description: Phone number not registered
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Auth/LoginFailed"
+definitions:
+  Auth:
+    LoginRequest:
+      required: ["email", "password"]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    LoginSuccess:
+      type: object
+      properties:
+        message: string
+        data:
+          type: string
+        error:
+          type: "null"
+    LoginFailed:
+      type: object
+      properties:
+        message: string
+        data:
+          type: "null"
+        error:
+          type: "null"

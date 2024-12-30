@@ -1,0 +1,38 @@
+tags:
+  name: Roles
+  description: Roles API
+/v1/roles:
+  get:
+    summary: Get roles
+    tags: [Roles]
+    responses:
+      200:
+        description: Success create user.
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Roles/GetRolesSuccess"
+      404:
+        description: Not found
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Roles/GetRolesFailed"
+definitions:
+  Roles:
+    GetRolesSuccess:
+      type: object
+      properties:
+        message: string
+        data:
+          type: object
+        error:
+          type: "null"
+    GetRolesFailed:
+      type: object
+      properties:
+        message: string
+        data:
+          type: "null"
+        error:
+          type: "null"
